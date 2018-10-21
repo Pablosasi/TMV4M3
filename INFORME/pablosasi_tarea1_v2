@@ -1,0 +1,79 @@
+---
+title: "El HP del auto ideal"
+author: "Pablo Sasi"
+date: "20 de octubre de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## TAREA 1
+### Conclusiones de la investigación
+
+El promedio de HP en los autos observados es de 147 con una distancia de 69 HP respecto a esa media
+
+```{r include=FALSE}
+
+p <- 147
+
+```
+
+
+En este sentido la media de `r p` es la que tendremos en cuenta para profundizar en nuestras conclusiones
+$$   $$
+
+La base utilizada es la que se encuentra dentro del entorno de R. Esta base hace referencia a una descripción de autos de los años 70 dentro del segmento automovil
+
+```{r eval=FALSE}
+mtcars
+```
+
+A continuación se presenta de manera más amigable la base utilizada para este ejercicio
+
+```{r echo=FALSE} 
+
+
+DT::datatable(mtcars)
+```
+
+
+#### HISTOGRAMA
+
+A continuación, se muestra las distribución del valor de HP de los autos.  Se puede obsevar que no sigue una distribución normal y presenta un skewed marcada a la izquierda.
+
+```{r echo=F, message=FALSE, results='hide'}
+library (PASWR)
+hist(mtcars$hp)
+
+```
+
+
+## GRÁFICO DE PLOTS
+
+En este caso vamos a observar como se comporta nuestra distribución en Plots. En el cuál podemos oservar que no hay una tendecia clara
+
+```{r pressure, echo=FALSE}
+plot(mtcars$hp)
+```
+
+```{r include=FALSE}
+a <- max(mtcars$hp)
+b <- min(mtcars$hp)
+```
+
+
+De los modelos analizados, el auto más potente es el *Maserati Bora* (`r a`  HP) y el menos potente el *Honda Civic* (`r b`  HP).  Derivado de esta observación se puede indicar que los valores de HP no son homogéneos. En este sentido se pude apreciar una menor competencia en los productos con mayor HP.
+
+En conclusión, el  nivel de HP que se sugiere es que sea superior a 180 HP donde el  auto encontrará menor competencia y mayores opciones de posicionar el nuevo vehículo.
+
+$$   $$
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library("highcharter")
+
+hchart(mtcars, "scatter", hcaes(x = hp, y = mpg))
+
+```
+
+Finalmente, generando un gráfico scatter plot entre el HP y MPG del auto se puede ver cierta correlación entre estas dos variables. Se concluye que entre mayor HP tiene al auto menos Millas por Galón puede recorrer el auto. Este sería un punto interesante a mejorar para la propuesta del auto ideal.
