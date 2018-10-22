@@ -1,0 +1,111 @@
+#
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+#subir documentos desde tu pc
+#load("www/data.rdata")
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
+library(shiny)
+library(DT)
+library(highcharter)
+library(ggplot2)
+library(dplyr)
+library(readxl)
+
+
+# devtools::install_github("jbkunst/highcharter") #  este es solo para instalar no corre otra vez
+
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("El auto ideal - Tarea 3"),
+  
+  # Sidebar with a slider input for number of bins 
+  sidebarLayout(
+    sidebarPanel(
+      conditionalPanel(condition= "input.pestaña!='Tabla'", 
+                       sliderInput("bins",
+                                   "Number of bins:",
+                                   min = 1,
+                                   max = 32,
+                                   value = 32)),
+      textInput("txt", "Escriba *no mostrar* si quiere ocultar los hp min y max"),
+      textOutput("texto"),
+     
+      numericInput("n","¿Cuántos elementos desea visualizar?", value = 5,  min = 1, max = 32),
+      
+      conditionalPanel(condition = "input.txt!='no mostrar'",
+                       h5( "El Hp minimo es", (min(mtcars$hp))),
+                       h5( "El Hp máximo es", (max(mtcars$hp)))
+      ),
+      
+      
+      
+      helpText("Aplicacion desarrollada por Pablo Sasi")
+    ),
+    
+    # Show a plot of the generated distribution
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Tabla",DTOutput("tabla")),
+        tabPanel("Correlación",highchartOutput("graf")),
+        tabPanel("Distribución",plotOutput("distPlot")), id="pestaña"
+      )
+      
+      
+      
+    )
+  )
+)
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+  
+ 
+  output$distPlot <- renderPlot({
+    # generate bins based on input$bins from ui.R
+    mtcars <- mtcars[c(1:input$bins),]
+    bins <- seq(min(mtcars$hp), max(mtcars$hp), length.out = input$bins + 1)
+    
+    # draw the histogram with the specified number of bins
+    hist(mtcars$hp, breaks = bins, col = 'darkgray', border = 'white')
+  })
+  
+  output$texto <- renderText({
+    paste("", input$txt)
+    
+  })
+  
+  output$tabla <- renderDT({ 
+    datatable(
+      mtcars[c(1:input$n),], extensions = 'Buttons', options = list(
+        dom = 'Bfrtip',
+        buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+        language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
+      )
+    )
+    
+  })
+  
+  output$graf <- renderHighchart({
+    mtcars <- mtcars[c(1:input$bins),]
+    
+    library("highcharter")
+    
+    hchart(mtcars, "scatter", hcaes(x = hp, y = mpg))
+    
+  })
+  
+  
+  
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
